@@ -1,18 +1,22 @@
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { usePathname } from 'next/navigation';
 const Header = () => {
   const cartItems = useSelector((state) => state.cart.items);
-
+  const pathname = usePathname();
+console.log(" pathname :",pathname)
   return (
     <header className="sticky top-0 z-50 bg-blue-600 p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
-          <input
-            type="text"
-            placeholder="Search for products, brands and more"
-            className="ml-4 p-2 w-full max-w-md rounded border border-gray-300"
-          />
+          {pathname === '/cart' &&
+          <Link href="/" legacyBehavior>
+          
+            <span className="ml-1 text-20 cursor-pointer  text-white">Store</span>
+          
+        </Link>
+          }
         </div>
         <div className="flex items-center space-x-6 text-white">
           

@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Styles for when the product is added to the cart */
+.animate-add {
+    animation: scale-up 0.5s ease-in-out forwards;
+  }
+  
+  @keyframes scale-up {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  /* Transition for the Add to Cart button background color */
+  button.bg-blue-500.bg-green-500 {
+    transition: background-color 0.3s ease;
+  }
+  

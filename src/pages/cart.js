@@ -1,4 +1,4 @@
-  import React, { useState } from 'react';
+  import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFromCart, updateQuantity } from '@/redux/cartSlice';
@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DiscountIcon from '@mui/icons-material/Discount';
 import Link from 'next/link';
+import { CloseOutlined } from '@mui/icons-material';
 
 const Cart = () => {
   const cartItems = useSelector((state) => state.cart.items);
@@ -16,7 +17,7 @@ const Cart = () => {
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [menualCoupon, setMenualCoupon] = useState('');
-
+  const [errorMessage,setErrorMessage] = useState('')
   const coupons = [
     { code: 'WELCOMEBACK100', description: 'Flat Rs.100 off', discount: 100, minAmount: 199, isDisabled: (amount) => amount >= this.minAmount },
     { code: 'TRYNEW', description: 'Get 60% off', discount: (amount) => Math.min(amount * 0.6, 110), minAmount: 149, isDisabled: (amount) => amount >= this.minAmount },
@@ -30,6 +31,7 @@ const Cart = () => {
       setAppliedCoupon(coupon.code);
     } else {
       alert(`Minimum cart value for this coupon is ₹${coupon.minAmount}`);
+      setErrorMessage(`Minimum cart value for this coupon is ₹${coupon.minAmount}`)
     }
     setIsPopupOpen(false);
   };
@@ -41,6 +43,16 @@ const Cart = () => {
 
   const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   const discountedTotal = totalAmount - discountAmount;
+  useEffect(() => {
+    if (appliedCoupon) {
+      const coupon = coupons.find((coupon) => coupon.code === appliedCoupon);
+      if (coupon && totalAmount < coupon.minAmount) {
+        removeCoupon();
+        alert(`Coupon ${appliedCoupon} has been removed because the minimum cart value is no longer met.`);
+        setErrorMessage(`Coupon ${appliedCoupon} has been removed because the minimum cart value is no longer met.`)
+      }
+    }
+  }, [totalAmount, appliedCoupon]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -127,6 +139,13 @@ const Cart = () => {
               <span>Total Amount</span>
               <span>₹{(discountedTotal + (discountedTotal > 100 ? 0 : 120)).toFixed(2)}</span>
             </div>
+            {errorMessage&&
+            
+            <div
+                className="border-dashed border-2  text-red border-gray-300 p-3 mt-4 flex items-center cursor-pointer"
+              >
+                <span>{errorMessage}</span><CloseOutlined onClick={()=> setErrorMessage('')}/>
+              </div>}
             {!appliedCoupon ? (
               <div
                 className="border-dashed border-2 border-gray-300 p-3 mt-4 flex items-center cursor-pointer"
@@ -168,11 +187,7 @@ const Cart = () => {
               disabled={menualCoupon === '' && coupons.findIndex(i=> i.code.toLowerCase() === menualCoupon.toLowerCase()) === -1}
             onClick={() => {
             const CouponIndex = coupons.findIndex(i=> i.code.toLowerCase() === menualCoupon.toLowerCase())
-            // console.log("coupons[CouponIndex] out",coupons[CouponIndex])
-            console.log("coupons[CouponIndex] out",CouponIndex)
-            console.log("coupons[CouponIndex] out menualCoupon",menualCoupon)
             if(menualCoupon !== '' && CouponIndex != -1) {
-            console.log("coupons[CouponIndex] ",coupons[CouponIndex])
             applyCoupon(coupons[CouponIndex])
             }
             }}
@@ -186,11 +201,13 @@ const Cart = () => {
                     <span>{coupon.description}</span>
                     <button
                       onClick={() => applyCoupon(coupon)}
-                      className="text-orange-500"
+                      className={totalAmount <= coupon.minAmount ?"text-red-500" : "text-orange-500"}
+                      disabled={totalAmount <= coupon.minAmount}
                     >
                       APPLY COUPON
                     </button>
                   </div>
+                  <span>Min Order Value: Rs.{coupon.minAmount}</span>
                 </div>
               ))}
             </div>
