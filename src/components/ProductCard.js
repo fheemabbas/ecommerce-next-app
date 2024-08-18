@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, removeFromCart } from '../redux/cartSlice';
 import { useRouter } from 'next/router';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ const ProductCard = ({ product }) => {
       <div>
         <img src={product.image} alt={product.title} className="product-image w-full h-40 object-cover mb-2" />
         <h2 className="text-lg font-semibold">{product.title}</h2>
-        <p className="text-green-500 font-bold">${product.price}</p>
+        <p className="text-green-500 font-bold">₹{product.price}</p>
       </div>
       {productQuantity > 0 ? (
         <div className="mt-4 flex items-center justify-between">
@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
             onClick={() => handleRemoveFromCart(product)}
           >
-            <RemoveShoppingCartIcon />
+            <DeleteOutlineIcon size="small" />
           </button>
           <span className="font-semibold">{productQuantity}</span>
           <button

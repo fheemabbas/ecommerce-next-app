@@ -8,6 +8,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DiscountIcon from '@mui/icons-material/Discount';
 import Link from 'next/link';
 import { CloseOutlined } from '@mui/icons-material';
+import Head from 'next/head';
 
 const Cart = () => {
   const cartItems = useSelector((state) => state.cart.items);
@@ -19,8 +20,8 @@ const Cart = () => {
   const [menualCoupon, setMenualCoupon] = useState('');
   const [errorMessage,setErrorMessage] = useState('')
   const coupons = [
-    { code: 'WELCOMEBACK100', description: 'Flat Rs.100 off', discount: 100, minAmount: 199, isDisabled: (amount) => amount >= this.minAmount },
-    { code: 'TRYNEW', description: 'Get 60% off', discount: (amount) => Math.min(amount * 0.6, 110), minAmount: 149, isDisabled: (amount) => amount >= this.minAmount },
+    { code: 'FLAT100', description: 'Flat Rs.100 off', discount: 100, minAmount: 199, isDisabled: (amount) => amount >= this.minAmount },
+    { code: 'GET60', description: 'Get 60% off Upto 110', discount: (amount) => Math.min(amount * 0.6, 110), minAmount: 149, isDisabled: (amount) => amount >= this.minAmount },
   ];
 
   const applyCoupon = (coupon) => {
@@ -56,6 +57,13 @@ const Cart = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Head>
+        {cartItems.length ? 
+        <title>My Cart ({cartItems.length})</title>
+        :
+        <title>My Cart</title>        
+        }
+      </Head>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {cartItems.length === 0 ? (
           <h2>Your cart is empty. <Link href="/">Go shopping!</Link></h2>
@@ -73,33 +81,30 @@ const Cart = () => {
                     <p className="text-green-500 font-bold">₹{(item.price * item.quantity).toFixed(2)}</p>
                     <div className="flex gap-2">
                       {item.quantity === 1 ? (
-                        <button
-                          className="bg-red-500 text-white px-2 py-1 rounded-full border-solid border-black text-16 bg-white text-black"
-                          onClick={() => {
+                          <DeleteOutlineIcon 
+                          // size="small"
+                          className='text-16 text-red-500  cursor-pointer'
+                             onClick={() => {
                             dispatch(removeFromCart({ id: item.id }));
                           }}
-                        >
-                          <DeleteOutlineIcon size="small" color="secondary" />
-                        </button>
+                          />
                       ) : (
-                        <button
-                          className="bg-gray-200 text-gray-700 px-2 rounded-full border-solid border-black text-16 bg-white text-black"
-                          onClick={() => {
+                          <RemoveIcon 
+                          // size="small"
+                          className='text-16 text-red-500  cursor-pointer'
+                            onClick={() => {
                             dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }));
                           }}
-                        >
-                          <RemoveIcon size="small" />
-                        </button>
+                          />
                       )}
                       <span className="text-gray-700">{item.quantity}</span>
-                      <button
-                        className="bg-gray-200 text-gray-700 px-2 rounded-full border-solid border-black text-16 bg-white text-black"
+                      <AddIcon
+                        // size="small" 
+                        className='text-16 text-green-500  cursor-pointer'
                         onClick={() => {
                           dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }));
                         }}
-                      >
-                        <AddIcon size="small" />
-                      </button>
+                        />
                     </div>
                   </div>
                 </div>
@@ -113,7 +118,7 @@ const Cart = () => {
             <h2 className="text-lg font-semibold">Price Details</h2>
             <div className="flex justify-between mt-4">
               <span>Price ({cartItems.length} items)</span>
-              <span>₹{totalAmount.toFixed(2)}</span>
+              <span>{totalAmount.toFixed(2)}</span>
             </div>
             {appliedCoupon && (
               <div className="flex justify-between mt-4 text-green-500">

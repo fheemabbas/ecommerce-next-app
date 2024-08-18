@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/cartSlice';
 import axios from 'axios';
 import ProductCard from './ProductCard';
+import Head from 'next/head';
 
 const API_URL = 'https://fakestoreapi.com/products';
 
@@ -20,9 +21,7 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
- console.log("cartItems ::",cartItems)
   const loadMoreProducts = async () => {
     try {
       const newProducts = await fetchProducts(20, page);
@@ -53,6 +52,9 @@ const ProductList = () => {
 
   return (
     <div className="product-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <Head>
+        <title>E Store Web</title>
+      </Head>
       {products.map((product) => (
         <ProductCard
             product={product}
